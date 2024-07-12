@@ -56,6 +56,9 @@ export default function Gallery() {
         contractABI.abi,
         provider
       );
+
+      console.log("contract address", contractAddress)
+      console.log("contract ABI", contractABI.abi)
       console.log("Contract address: ", contractAddress);
       console.log("Contract: ", contract);
       const totalSupply = await contract.totalSupply();

@@ -13,9 +13,9 @@ import {
 import { FiRefreshCw } from "react-icons/fi";
 import NFTCard from "./NFTCard";
 import { useAmoy } from "../contexts/AmoyContext";
-
 import { ethers } from "ethers";
 import contractABI from "../../abis/contractABI.json";
+
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
 export default function Gallery() {
@@ -89,7 +89,7 @@ export default function Gallery() {
     if (isMetaMaskInstalled && checkIsOnAmoyNetwork()) {
       loadNFTs();
     } else {
-      toggleNetworkModal(); // If the network is not correct, open the modal
+      toggleNetworkModal();
     }
   };
 
@@ -101,7 +101,6 @@ export default function Gallery() {
     );
   }
 
-  // Return UI with a conditional check
   if (!walletConnected) {
     return (
       <Flex
@@ -122,12 +121,13 @@ export default function Gallery() {
           m={4}
           icon={<FiRefreshCw />}
           aria-label="Refresh Gallery"
-          size="sm" // Making the button smaller
+          size="sm"
           onClick={refreshGallery}
         />
       </Flex>
     );
   }
+
   return (
     <Box position="relative" p={20}>
       <IconButton
@@ -135,8 +135,8 @@ export default function Gallery() {
         aria-label="Refresh Gallery"
         position="absolute"
         top={4}
-        left={4} // Changed from right to left
-        size="sm" // Making the button smaller
+        left={4}
+        size="sm"
         onClick={refreshGallery}
       />
 

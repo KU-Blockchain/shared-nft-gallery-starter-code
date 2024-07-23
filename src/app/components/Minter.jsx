@@ -25,7 +25,7 @@ const Minter = ({ isOpen, onClose }) => {
     useAmoy();
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/jpeg, image/png",
+    accept: "image/jpeg, image/png, application/pdf",
     onDrop: (acceptedFiles) => {
       setFile(acceptedFiles[0]);
     },
@@ -36,7 +36,6 @@ const Minter = ({ isOpen, onClose }) => {
       const formData = new FormData();
       formData.append("file", file);
 
-      // No need for fs as we're handling this in the browser environment
       const res = await fetch(
         "https://api.pinata.cloud/pinning/pinFileToIPFS",
         {
@@ -49,8 +48,6 @@ const Minter = ({ isOpen, onClose }) => {
       );
 
       const resData = await res.json();
-
-      // Assuming the file URL is what you need for minting
       return `https://gateway.pinata.cloud/ipfs/${resData.IpfsHash}`;
     } catch (error) {
       console.error("Error uploading file to IPFS:", error);
@@ -69,12 +66,10 @@ const Minter = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Check if the user is on the Amoy network
     if (!checkIsOnAmoyNetwork()) {
       console.log("You're not connected to the Amoy network!");
-      // Prompt user to switch to the Amoy network
       await addPolygonAmoyNetwork();
-      return; // Optionally, you could stop the function here or recheck the network
+      return;
     }
 
     const metadataURI = await uploadToIPFS(file);
@@ -83,7 +78,6 @@ const Minter = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Proceed with getting the provider and signer from ethers as you have MetaMask and are connected to Amoy
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -111,60 +105,58 @@ const Minter = ({ isOpen, onClose }) => {
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Mint your NFT</ModalHeader>
-          <ModalBody>
-            <VStack spacing={4}>
-              <Center
-                p={16}
-                bg="gray.200"
-                borderRadius="md"
-                {...getRootProps()}
-                cursor="pointer"
-              >
-                <input {...getInputProps()} />
-                {file ? (
-                  <Text>{file.name}</Text>
-                ) : (
-                  <Text textColor={"black"}>
-                    Drag &apos;n&apos; drop your file here, or click to select
-                    files
-                  </Text>
-                )}
-              </Center>
-              <input
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{ padding: "10px", margin: "10px 0", width: "100%" }}
-              />
-              <input
-                placeholder="Enter a label for the NFT"
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                style={{ padding: "10px", margin: "10px 0", width: "100%" }}
-              />
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Mint your NFT</ModalHeader>
+        <ModalBody>
+          <VStack spacing={4}>
+            <Center
+              p={16}
+              bg="gray.200"
+              borderRadius="md"
+              {...getRootProps()}
+              cursor="pointer"
+            >
+              <input {...getInputProps()} />
+              {file ? (
+                <Text>{file.name}</Text>
+              ) : (
+                <Text textColor={"black"}>
+                  Drag &apos;n&apos; drop your file here, or click to select
+                  files
+                </Text>
+              )}
+            </Center>
+            <input
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{ padding: "10px", margin: "10px 0", width: "100%" }}
+            />
+            <input
+              placeholder="Enter a label for the NFT"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              style={{ padding: "10px", margin: "10px 0", width: "100%" }}
+            />
 
-              <Button
-                colorScheme="blue"
-                isDisabled={!file || !name}
-                onClick={handleMint}
-              >
-                Begin Mint
-              </Button>
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" onClick={onClose}>
-              Close
+            <Button
+              colorScheme="blue"
+              isDisabled={!file || !name}
+              onClick={handleMint}
+            >
+              Begin Mint
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="ghost" onClick={onClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

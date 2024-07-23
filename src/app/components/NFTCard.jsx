@@ -1,6 +1,40 @@
-import { Box, Image, Text } from "@chakra-ui/react";
+import { Box, Image, Text, Link } from "@chakra-ui/react";
 
 const NFTCard = ({ src, index, owner, label }) => {
+  const renderMedia = (src) => {
+    // if (src.endsWith(".pdf")) {
+    //   return (
+    //     <Box p={2} textAlign="center">
+    //       <Link href={src} isExternal>
+    //         View PDF
+    //       </Link>
+    //     </Box>
+    //   );
+      
+    // } else 
+    console.log(src);
+    console.log("test: ", src.endsWith(".jpg") || src.endsWith(".jpeg") || src.endsWith(".png"));
+    if (src.endsWith(".jpg") || src.endsWith(".jpeg") || src.endsWith(".png")) {
+      return (
+        <Image
+          src={src}
+          alt={`Gallery image ${index}`}
+          objectFit="contain"
+          maxH="300px"
+          width="100%"
+          alignSelf="center"
+        />
+      );
+    } 
+    else {
+      return (
+        <Text color="red.500" fontSize="sm" textAlign="center">
+          Unsupported file type
+        </Text>
+      );
+    }
+  };
+
   return (
     <Box
       boxShadow="lg"
@@ -9,14 +43,7 @@ const NFTCard = ({ src, index, owner, label }) => {
       display="flex"
       flexDirection="column"
     >
-      <Image
-        src={src}
-        alt={`Gallery image ${index}`}
-        objectFit="contain"
-        maxH="300px"
-        width="100%"
-        alignSelf="center"
-      />
+      {renderMedia(src)}
       <Box p={2} textAlign="center">
         <Text color="gray.500" fontSize="sm">
           minted by {owner}

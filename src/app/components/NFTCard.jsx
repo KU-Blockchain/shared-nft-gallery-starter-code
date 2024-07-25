@@ -1,39 +1,10 @@
-import { Box, Image, Text, Link } from "@chakra-ui/react";
+import React from "react";
+import { Box, Image, Text } from "@chakra-ui/react";
+import { Document, Page } from 'react-pdf';
 
 const NFTCard = ({ src, index, owner, label }) => {
-  const renderMedia = (src) => {
-    // if (src.endsWith(".pdf")) {
-    //   return (
-    //     <Box p={2} textAlign="center">
-    //       <Link href={src} isExternal>
-    //         View PDF
-    //       </Link>
-    //     </Box>
-    //   );
-      
-    // } else 
-    console.log(src);
-    console.log("test: ", src.endsWith(".jpg") || src.endsWith(".jpeg") || src.endsWith(".png"));
-    if (src.endsWith(".jpg") || src.endsWith(".jpeg") || src.endsWith(".png")) {
-      return (
-        <Image
-          src={src}
-          alt={`Gallery image ${index}`}
-          objectFit="contain"
-          maxH="300px"
-          width="100%"
-          alignSelf="center"
-        />
-      );
-    } 
-    else {
-      return (
-        <Text color="red.500" fontSize="sm" textAlign="center">
-          Unsupported file type
-        </Text>
-      );
-    }
-  };
+  const isImage = src.match(/\.(jpeg|jpg|gif|png)$/) != null;
+  const isPdf = src.match(/\.pdf$/) != null;
 
   return (
     <Box
@@ -43,7 +14,24 @@ const NFTCard = ({ src, index, owner, label }) => {
       display="flex"
       flexDirection="column"
     >
-      {renderMedia(src)}
+      {isImage ? (
+        <Image
+          src={src}
+          alt={`Gallery image ${index}`}
+          objectFit="contain"
+          maxH="300px"
+          width="100%"
+          alignSelf="center"
+        />
+      ) : isPdf ? (
+        <Box height="300px" width="100%">
+          <Document file={src}>
+            <Page pageNumber={1} width={300} />
+          </Document>
+        </Box>
+      ) : (
+        <Text>Unsupported file type</Text>
+      )}
       <Box p={2} textAlign="center">
         <Text color="gray.500" fontSize="sm">
           minted by {owner}

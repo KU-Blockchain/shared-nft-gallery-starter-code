@@ -25,7 +25,11 @@ const Minter = ({ isOpen, onClose }) => {
     useAmoy();
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/jpeg, image/png, application/pdf",
+    accept: {
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/png': ['.png'],
+      'application/pdf': ['.pdf']
+    },
     onDrop: (acceptedFiles) => {
       setFile(acceptedFiles[0]);
     },
@@ -47,6 +51,10 @@ const Minter = ({ isOpen, onClose }) => {
         }
       );
 
+      if (!res.ok) {
+        throw new Error(`Failed to upload file: ${res.statusText}`);
+      }
+
       const resData = await res.json();
       return `https://gateway.pinata.cloud/ipfs/${resData.IpfsHash}`;
     } catch (error) {
@@ -60,6 +68,8 @@ const Minter = ({ isOpen, onClose }) => {
       console.log("No file selected to mint!");
       return;
     }
+
+    console.log("File selected:", file);
 
     if (!isMetaMaskInstalled) {
       console.log("MetaMask is not installed!");
@@ -77,6 +87,8 @@ const Minter = ({ isOpen, onClose }) => {
       console.log("File upload to IPFS failed");
       return;
     }
+
+    console.log("Metadata URI:", metadataURI);
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();

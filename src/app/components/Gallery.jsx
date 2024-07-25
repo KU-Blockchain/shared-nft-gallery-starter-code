@@ -7,13 +7,12 @@ import {
   Text,
   Spinner,
   Flex,
-  Link,
   IconButton,
 } from "@chakra-ui/react";
 import { FiRefreshCw } from "react-icons/fi";
 import NFTCard from "./NFTCard";
 import { useAmoy } from "../contexts/AmoyContext";
-import { ethers } from "ethers";
+import { ethers } from "ethers";  // Correct import for ethers
 import contractABI from "../../abis/contractABI.json";
 
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -38,34 +37,29 @@ export default function Gallery() {
       toggleNetworkModal();
     }
     setIsLoading(false);
-  }, [
-    walletConnected,
-    isMetaMaskInstalled,
-    currentChainId,
-    checkIsOnAmoyNetwork,
-    toggleNetworkModal,
-  ]);
+  }, [walletConnected, isMetaMaskInstalled, checkIsOnAmoyNetwork, toggleNetworkModal]);
 
   const loadNFTs = async () => {
     setIsLoading(true);
     if (typeof window.ethereum !== "undefined") {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const contract = new ethers.Contract(
-        contractAddress,
-        contractABI.abi,
-        provider
-      );
-
-      console.log("contract address", contractAddress)
-      console.log("contract ABI", contractABI.abi)
-      console.log("Contract address: ", contractAddress);
-      console.log("Contract: ", contract);
-      const totalSupply = await contract.totalSupply();
-      console.log("Total supply: ", totalSupply);
       try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const contract = new ethers.Contract(
+          contractAddress,
+          contractABI.abi,
+          provider
+        );
+
+        console.log("contract address", contractAddress);
+        console.log("contract ABI", contractABI.abi);
+        console.log("Contract address: ", contractAddress);
+        console.log("Contract: ", contract);
+        const totalSupply = await contract.totalSupply();
+        console.log("Total supply: ", totalSupply);
+
         let nfts = [];
-        for (let i = 1; i <= Number(totalSupply); i++) {
+        for (let i = ethers.BigNumber.from(1); i.lte(totalSupply); i = i.add(1)) {
           const tokenURI = await contract.tokenURI(i);
           const tokenName = await contract.getTokenName(i);
           const tokenLabel = await contract.getTokenLabel(i);
@@ -81,8 +75,8 @@ export default function Gallery() {
       } catch (error) {
         console.error("Failed to load NFTs:", error);
       }
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   const refreshGallery = () => {

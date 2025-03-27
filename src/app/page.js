@@ -42,7 +42,7 @@ export default function Home() {
       <AmoyProvider>
         <Box textAlign="center" marginTop="4">
           <Heading as="h1" size="2xl" marginBottom="8">
-            The KU Blockchain Community Gallery
+            Jahnvi&apos;s Gallery
           </Heading>
           <Box my={4}>
             {" "}
